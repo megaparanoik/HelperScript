@@ -10,7 +10,9 @@ export BUILD_ROOTFS=${CURRENT_DIR}/out/fs
 
 function kernel_qemu()
 {
+	echo
 	echo ">>>Starting to build the kernel"
+	echo
 	cd ${KERN_PATH}
 	make ARCH=i386 O=${BUILD_KERNEL}_qemu defconfig
 	cd ${BUILD_KERNEL}_qemu
@@ -20,14 +22,18 @@ function kernel_qemu()
 
 function kernel_orange()
 {
+	echo
 	echo ">>>Starting to build the kernel"
+	echo
 	cd ${KERN_PATH}
 	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=${BUILD_KERNEL}_orange sunxi_gl_defconfig
 	cd ${BUILD_KERNEL}_orange
 	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- $@ -j4
 	if [ -z $@ ] 
 	then
+		echo
 		echo ">>>Starting to build modules"
+		echo
 		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules -j4
 		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules_install INSTALL_MOD_PATH=${BUILD_KERNEL}_orange_modules -j4
 	fi
@@ -36,7 +42,9 @@ function kernel_orange()
 
 function fs()
 {
+	echo
 	echo ">>>Starting to build the FS"
+	echo
 	cd ${FS_PATH}
 	make O=${BUILD_ROOTFS} qemu_x86_GL_defconfig
 	cd ${BUILD_ROOTFS}
@@ -46,7 +54,9 @@ function fs()
 
 function fs_orange()
 {
+	echo
 	echo ">>>Starting to build the FS"
+	echo
 	cd ${FS_PATH}
 	make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=${BUILD_ROOTFS} orangepi_one_GL_defconfig
 	cd ${BUILD_ROOTFS}
@@ -57,7 +67,9 @@ function fs_orange()
 
 function mashine()
 {
+	echo
 	echo "Runing machine"
+	echo
 
 	qemu-system-i386 \
 	-kernel ${BUILD_KERNEL}/arch/x86/boot/bzImage \
