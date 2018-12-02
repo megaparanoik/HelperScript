@@ -22,14 +22,14 @@ function kernel_orange()
 {
 	echo ">>>Starting to build the kernel"
 	cd ${KERN_PATH}
-	make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=${BUILD_KERNEL}_orange sunxi_gl_defconfig
+	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=${BUILD_KERNEL}_orange sunxi_gl_defconfig
 	cd ${BUILD_KERNEL}_orange
-	make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- $@ -j4
+	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- $@ -j4
 	if [ -z $@ ] 
 	then
 		echo ">>>Starting to build modules"
-		make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules -j4
-		make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules_install INSTALL_MOD_PATH=${BUILD_KERNEL}_orange_modules -j4
+		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules -j4
+		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules_install INSTALL_MOD_PATH=${BUILD_KERNEL}_orange_modules -j4
 	fi
 	cd ${CURRENT_DIR}
 }
