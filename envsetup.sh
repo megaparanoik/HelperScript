@@ -40,14 +40,14 @@ function kernel_orange()
 	cd ${CURRENT_DIR}
 }
 
-function fs()
+function fs_qemu()
 {
 	echo
 	echo ">>>Starting to build the FS"
 	echo
 	cd ${FS_PATH}
-	make O=${BUILD_ROOTFS} qemu_x86_GL_defconfig
-	cd ${BUILD_ROOTFS}
+	make O=${BUILD_ROOTFS}_qemu qemu_x86_GL_defconfig
+	cd ${BUILD_ROOTFS}_qemu
 	make $@ ${FLAGS}
 	cd ${CURRENT_DIR}
 }
@@ -72,9 +72,9 @@ function mashine()
 	echo
 
 	qemu-system-i386 \
-	-kernel ${BUILD_KERNEL}/arch/x86/boot/bzImage \
+	-kernel ${BUILD_KERNEL}_qemu/arch/x86/boot/bzImage \
 	-append "root=/dev/sda" \
-	-hda ${BUILD_ROOTFS}/images/rootfs.ext3 \
+	-hda ${BUILD_ROOTFS}_qemu/images/rootfs.ext3 \
 	-redir tcp:8022::22 &
 
 	gnome-terminal&
@@ -97,12 +97,13 @@ function upload_to_user()
 
 echo
 echo
-echo "fs() 				: Build root fs"
-echo "fs() clean 			: Clean root fs"
-echo "kernel() 			: Build kernel"
+echo "fs_qemu() 			: Build root fs for QEMU x86"
+echo "fs_orange() 			: Build root fs for Orange Pi One"
+echo "---------------------------------------------------------------"
+echo "kernel_qemu() 			: Build kernel for QEMU x86"
 echo "kernel_orange()			: Build kernel for Orange Pi One"
-echo "kernel() clean			: Clean build kernel"
-echo "mashine()			: Start virtual mashine"
+echo "---------------------------------------------------------------"
+echo "mashine()			: Start virtual mashine QEMU x86"
 echo "upload_to_user() file.ko	: Upload file to user folder"
 echo
 echo
