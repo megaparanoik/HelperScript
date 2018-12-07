@@ -95,6 +95,21 @@ function upload_to_user()
 	fi
 }
 
+function upload_to_pi()
+{
+	if [ -z $1 ]; then
+		echo "You must pass a filename!"
+	else
+		echo "uploading $1 to user"
+		sshpass -p "0000" scp $1 pi:/home/alex/desktop
+		if [ $? ]; then
+			echo "OK"
+		else
+			echo "Fail"
+		fi
+	fi
+}
+
 echo
 echo
 echo "fs_qemu() 			: Build root fs for QEMU x86"
