@@ -1,41 +1,68 @@
 #!/bin/bash
 
 CURRENT_DIR=$(pwd)
-export KERN_PATH=${CURRENT_DIR}/kernel
-export BUILD_KERNEL=${CURRENT_DIR}/out/kernel
+#kernel sources
+export KERN_SRC_PATH=${CURRENT_DIR}/kernel
+#output filder
+export OUT=${CURRENT_DIR}/out
 
+#Objects
+export BUILD_KERNEL=${OUT}/kernel
+
+#Ouptups kernel, modules, DT
+export DT_OUT_PATH=${OUT}/release
+export KERN_OUT_PATH=${OUT}/release
+export MOD_OUT_PATH=${OUT}/release
+
+#Outputs FS
 export FS_PATH=${CURRENT_DIR}/buildroot
-export BUILD_ROOTFS=${CURRENT_DIR}/out/fs
+export BUILD_ROOTFS=${OUT}/fs
 
+export WORKER=$(grep -c ^processor /proc/cpuinfo)
 
 function kernel_qemu()
 {
 	echo
 	echo ">>>Starting to build the kernel"
 	echo
-	cd ${KERN_PATH}
+	cd ${KERN_SRC_PATH}
 	make ARCH=i386 O=${BUILD_KERNEL}_qemu defconfig
 	cd ${BUILD_KERNEL}_qemu
 	make $@ -j4
 	cd ${CURRENT_DIR}
 }
 
-function kernel_orange()
+function orange()
 {
 	echo
-	echo ">>>Starting to build the kernel"
+	echo ">>> Build the kernel for Orange Pi One in ${WORKER} threads"
 	echo
-	cd ${KERN_PATH}
+	cd ${KERN_SRC_PATH}
+	#configure
 	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=${BUILD_KERNEL}_orange sunxi_gl_defconfig
 	cd ${BUILD_KERNEL}_orange
-	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- $@ -j4
+	#compile or clean
+	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- $@ -j${WORKER}
+
+	#if not clean the install all
 	if [ -z $@ ] 
 	then
 		echo
-		echo ">>>Starting to build modules"
+		echo ">>> Install kernel"
 		echo
-		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules -j4
-		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules_install INSTALL_MOD_PATH=${BUILD_KERNEL}_orange_modules -j4
+		mkdir -p ${KERN_OUT_PATH}
+		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- install INSTALL_PATH=${KERN_OUT_PATH}
+		cp ${BUILD_KERNEL}_orange/arch/arm/boot/zImage ${KERN_OUT_PATH}/
+		echo
+		echo ">>> Build modules"
+		echo
+		#make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules -j4
+		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules_install INSTALL_MOD_PATH=${MOD_OUT_PATH}
+		echo
+		echo ">>> Install DTB"
+		echo
+		make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs_install INSTALL_PATH=${DT_OUT_PATH}
+
 	fi
 	cd ${CURRENT_DIR}
 }
@@ -108,6 +135,31 @@ function upload_to_pi()
 			echo "Fail"
 		fi
 	fi
+}
+
+
+function dtmake()
+{
+	if [ -z $@ ]
+	then
+	echo "PASS THE FILENAME!"
+	return 1;
+	fi
+
+	LOCAL_DIR=$(pwd)
+	#get filename without extension
+	NAME=`echo "$@" | cut -d'.' -f1`
+
+	#preparsing
+	cpp -nostdinc -I ${KERN_SRC_PATH}/include -undef -x assembler-with-cpp  $@ ${NAME}.preprocessed
+
+	#compile
+	dtc -@ -I dts -O dtb  ${NAME}.preprocessed -o ${NAME}.dtbo
+
+	#delete preparing
+	rm ${NAME}.preprocessed
+
+	echo "COMPLETE!"
 }
 
 echo
