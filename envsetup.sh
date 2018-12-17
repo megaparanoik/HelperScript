@@ -23,12 +23,14 @@ export WORKER=$(grep -c ^processor /proc/cpuinfo)
 function kernel_qemu()
 {
 	echo
-	echo ">>>Starting to build the kernel"
+	echo ">>> Build the kernel for QEMU x86 in ${WORKER} threads"
 	echo
 	cd ${KERN_SRC_PATH}
-	make ARCH=i386 O=${BUILD_KERNEL}_qemu defconfig
+	#Configuring
+	make ARCH=i386 O=${BUILD_KERNEL}_qemu i386_gl_defconfig
 	cd ${BUILD_KERNEL}_qemu
-	make $@ -j4
+	#compile or clean
+	make ARCH=i386 $@ -j${WORKER}
 	cd ${CURRENT_DIR}
 }
 
@@ -70,7 +72,7 @@ function orange()
 function fs_qemu()
 {
 	echo
-	echo ">>>Starting to build the FS"
+	echo ">>> Build QEMU x86 FS"
 	echo
 	cd ${FS_PATH}
 	make O=${BUILD_ROOTFS}_qemu qemu_x86_GL_defconfig
@@ -91,11 +93,10 @@ function fs_orange()
 	cd ${CURRENT_DIR}
 }
 
-
 function mashine()
 {
 	echo
-	echo "Runing machine"
+	echo ">>> Start QEMU x86 machine"
 	echo
 
 	qemu-system-i386 \
@@ -107,7 +108,7 @@ function mashine()
 	gnome-terminal&
 }
 
-function upload_to_user()
+function upload_to_qemu()
 {
 	if [ -z $1 ]; then
 		echo "You must pass a filename!"
@@ -137,8 +138,7 @@ function upload_to_pi()
 	fi
 }
 
-
-function dtmake()
+function dtomake()
 {
 	if [ -z $@ ]
 	then
@@ -163,14 +163,15 @@ function dtmake()
 }
 
 echo
-echo
-echo "fs_qemu() 			: Build root fs for QEMU x86"
-echo "fs_orange() 			: Build root fs for Orange Pi One"
+echo "==============================================================="
+echo "kernel_qemu() 		  : Build kernel for QEMU x86"
+echo "orange()		  : Build kernel, modules, DT for Orange Pi One"
 echo "---------------------------------------------------------------"
-echo "kernel_qemu() 			: Build kernel for QEMU x86"
-echo "kernel_orange()			: Build kernel for Orange Pi One"
+echo "fs_qemu() 		  : Build root fs for QEMU x86"
 echo "---------------------------------------------------------------"
-echo "mashine()			: Start virtual mashine QEMU x86"
-echo "upload_to_user() file.ko	: Upload file to user folder"
-echo
+echo "mashine()		  : Start virtual mashine QEMU x86"
+echo "upload_to_qemu() file.ko  : Upload file to QEMU"
+echo "upload_to_pi() file.ko    : Upload file to OrangePi One"
+echo "dtomake()		  : Compile DT Overlay"
+echo "==============================================================="
 echo
