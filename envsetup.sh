@@ -163,16 +163,21 @@ function dtomake()
 	echo "COMPLETE!"
 }
 
-echo
-echo "==============================================================="
-echo "kernel_qemu() 		  : Build kernel for QEMU x86"
-echo "orange()		  : Build kernel, modules, DT for Orange Pi One"
-echo "---------------------------------------------------------------"
-echo "fs_qemu() 		  : Build root fs for QEMU x86"
-echo "---------------------------------------------------------------"
-echo "mashine()		  : Start virtual mashine QEMU x86"
-echo "upload_to_qemu() file.ko  : Upload file to QEMU"
-echo "upload_to_pi() file.ko    : Upload file to OrangePi One"
-echo "dtomake()		  : Compile DT Overlay"
-echo "==============================================================="
-echo
+function hh()
+{
+	echo
+	echo "==============================================================="
+	echo "kernel_qemu() 		  : Build kernel for QEMU x86"
+	echo "orange()		  : Build kernel, modules, DT for Orange Pi One"
+	echo "---------------------------------------------------------------"
+	echo "fs_qemu() 		  : Build root fs for QEMU x86"
+	echo "---------------------------------------------------------------"
+	echo "mashine()		  : Start virtual mashine QEMU x86"
+	echo "upload_to_qemu() file.ko  : Upload file to QEMU"
+	echo "upload_to_pi() file.ko    : Upload file to OrangePi One"
+	echo "dtomake()		  : Compile DT Overlay"
+	echo "==============================================================="
+	echo
+}
+
+hh
