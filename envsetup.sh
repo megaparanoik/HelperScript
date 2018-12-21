@@ -155,7 +155,7 @@ function dtomake()
 	cpp -nostdinc -I ${KERN_SRC_PATH}/include -undef -x assembler-with-cpp  $@ ${NAME}.preprocessed
 
 	#compile
-	dtc -@ -I dts -O dtb  ${NAME}.preprocessed -o ${NAME}.dtbo
+	${BUILD_KERNEL}_orange/scripts/dtc/dtc -@ -I dts -O dtb  ${NAME}.preprocessed -o ${NAME}.dtbo
 
 	#delete preparing
 	rm ${NAME}.preprocessed
