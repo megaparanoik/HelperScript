@@ -103,6 +103,7 @@ function mashine()
 	-kernel ${BUILD_KERNEL}_qemu/arch/x86/boot/bzImage \
 	-append "root=/dev/sda" \
 	-hda ${BUILD_ROOTFS}_qemu/images/rootfs.ext3 \
+	-smp 4 \
 	-redir tcp:8022::22 &
 
 	gnome-terminal&
