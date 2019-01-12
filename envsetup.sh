@@ -2,7 +2,7 @@
 
 CURRENT_DIR=$(pwd)
 #kernel sources
-export KERN_SRC_PATH=${CURRENT_DIR}/kernel
+export KERN_SRC_PATH=${CURRENT_DIR}/kernel-stable
 #output filder
 export OUT=${CURRENT_DIR}/out
 
@@ -180,4 +180,34 @@ function hh()
 	echo
 }
 
+function prepare()
+{
+	if [ ! -d "$KERN_SRC_PATH" ]; then
+  		echo "Ther is no kernel source directory!!!"
+	fi
+
+	if [ ! -d "$FS_PATH" ]; then
+  		echo "Ther is no buildroot source directory!!!"
+	fi
+
+	if [ ! -d "$OUT" ]; then
+  		mkdir -p $OUT
+	fi
+
+	if [ ! -d "$BUILD_KERNEL" ]; then
+  		mkdir -p $BUILD_KERNEL
+	fi
+	
+	if [ ! -d "$KERN_OUT_PATH" ]; then
+  		mkdir -p $KERN_OUT_PATH
+	fi
+	
+	if [ ! -d "$BUILD_ROOTFS" ]; then
+  		mkdir -p $BUILD_ROOTFS
+	fi
+
+
+}
+
 hh
+prepare
