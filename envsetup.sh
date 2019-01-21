@@ -46,9 +46,10 @@ function orange()
 	#compile or clean
 	make LOCALVERSION="" ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- $@ -j${WORKER}
 
-	#if not clean the install all
+	#if not clean then install all
 	if [ -z $@ ] 
 	then
+		rm -r ${KERN_OUT_PATH}/*
 		echo
 		echo ">>> Install kernel"
 		echo
